@@ -420,16 +420,6 @@ def thermald_thread():
       time.sleep(10)
       HARDWARE.shutdown()
 
-    # dp - auto shutdown
-    if off_ts is not None:
-      shutdown_sec = 10 * 60
-      sec_now = sec_since_boot() - off_ts
-      if (shutdown_sec - 5) < sec_now:
-        msg.deviceState.chargingDisabled = True
-      if shutdown_sec < sec_now:
-        time.sleep(10)
-        HARDWARE.shutdown()
-
     # If UI has crashed, set the brightness to reasonable non-zero value
     manager_state = messaging.recv_one_or_none(managerState_sock)
     if manager_state is not None:
@@ -456,16 +446,16 @@ def thermald_thread():
     startup_conditions_prev = startup_conditions.copy()
 
     # report to server once every 10 minutes
-    #if (count % int(600. / DT_TRML)) == 0:
-    #  if EON and started_ts is None and msg.deviceState.memoryUsagePercent > 40:
-    #    cloudlog.event("High offroad memory usage", mem=msg.deviceState.memoryUsagePercent)
+    if (count % int(600. / DT_TRML)) == 0:
+      if EON and started_ts is None and msg.deviceState.memoryUsagePercent > 40:
+        cloudlog.event("High offroad memory usage", mem=msg.deviceState.memoryUsagePercent)
 
-    #  location = messaging.recv_sock(location_sock)
-    #  cloudlog.event("STATUS_PACKET",
-    #                 count=count,
-    #                 pandaState=(strip_deprecated_keys(pandaState.to_dict()) if pandaState else None),
-    #                 location=(strip_deprecated_keys(location.gpsLocationExternal.to_dict()) if location else None),
-    #                 deviceState=strip_deprecated_keys(msg.to_dict()))
+      location = messaging.recv_sock(location_sock)
+      cloudlog.event("STATUS_PACKET",
+                     count=count,
+                     pandaState=(strip_deprecated_keys(pandaState.to_dict()) if pandaState else None),
+                     location=(strip_deprecated_keys(location.gpsLocationExternal.to_dict()) if location else None),
+                     deviceState=strip_deprecated_keys(msg.to_dict()))
 
     count += 1
 
