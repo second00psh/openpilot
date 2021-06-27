@@ -9,8 +9,8 @@ from opendbc.can.packer import CANPacker
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
-VEL = [13.889, 16.667, 22.2222]  # velocities
-MIN_PEDAL = [0., 0.05, 0.07]
+#VEL = [13.889, 16.667, 22.2222]  # velocities
+#MIN_PEDAL = [0., 0.05, 0.07]
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
@@ -58,9 +58,9 @@ class CarController():
         #regen_active = False
       elif CS.adaptive_Cruise:
         #regen_active = True if actuators.brake > 0.01 else False
-        regen = clip(actuators.brake * 0.1, 0., 0.1)
+        regen = clip(actuators.brake / 4, 0., 0.1)
         Delta = actuators.gas - self.apply_pedal_last
-        min_pedal_speed = interp(CS.out.vEgo, VEL, MIN_PEDAL)
+        #min_pedal_speed = interp(CS.out.vEgo, VEL, MIN_PEDAL)
         if Delta > 0:
           pedal = 0.6 * actuators.gas + self.apply_pedal_last * 0.4
         else:
